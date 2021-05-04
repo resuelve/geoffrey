@@ -4,29 +4,26 @@ defmodule King.Rules.Condition do
   defstruct [
     :comparator,
     :field,
-    :compare_to,
-    :child_condition
+    :compare_to
   ]
 
   @type t :: %__MODULE__{
           comparator: function() | String.t(),
           field: [String.t()],
-          compare_to: any(),
-          child_condition: King.Rules.Condition.t()
+          compare_to: any()
         }
 
-  def new(comparator, field, to_compare, child_condition \\ nil)
+  def new(comparator, field, to_compare)
 
-  def new(comparator, field, to_compare, child_condition) when is_binary(field) do
-    new(comparator, [field], to_compare, child_condition)
+  def new(comparator, field, to_compare) when is_binary(field) do
+    new(comparator, [field], to_compare)
   end
 
-  def new(comparator, field, to_compare, child_condition) when is_list(field) do
+  def new(comparator, field, to_compare) when is_list(field) do
     %__MODULE__{
       comparator: comparator,
       field: field,
-      compare_to: to_compare,
-      child_condition: child_condition
+      compare_to: to_compare
     }
   end
 
@@ -83,51 +80,5 @@ defmodule King.Rules.Condition do
 
   def find_field(input, _fields) do
     input
-  end
-
-  def parse(condition) do
-    [condition_type, field, compare_to] = String.split(condition, "|", parts: 3)
-    field_path = String.split(field, ">")
-
-    compare_to =
-      compare_to
-      |> String.split("#")
-      |> parse_compare_to()
-
-    %__MODULE__{
-      comparator: condition_type,
-      field: field_path,
-      compare_to: compare_to
-    }
-  end
-
-  # Parsea el valor que se va a comprar en la condicion
-  # @spec parse_compare_to([String.t(), String.t()]) :: any()
-  defp parse_compare_to(["i", value]) do
-    case Integer.parse(value) do
-      {parsed_value, _} ->
-        parsed_value
-
-      _ ->
-        failed_compare_to("int", value)
-    end
-  end
-
-  defp parse_compare_to(["f", value]) do
-    case Float.parse(value) do
-      {parsed_value, _} ->
-        parsed_value
-
-      _ ->
-        failed_compare_to("float", value)
-    end
-  end
-
-  defp parse_compare_to([value]) do
-    value
-  end
-
-  defp failed_compare_to(type, value) do
-    raise "Invalid to_compare #{value} is not of type #{type}"
   end
 end
