@@ -1,5 +1,6 @@
 defmodule King.Rules.Condition do
   alias King.Rules.Condition.Comparators
+  alias King.Parsers.{NL, Text}
 
   defstruct [
     :comparator,
@@ -13,17 +14,17 @@ defmodule King.Rules.Condition do
           compare_to: any()
         }
 
-  def new(comparator, field, to_compare)
+  def new(comparator, field, compare_to)
 
-  def new(comparator, field, to_compare) when is_binary(field) do
-    new(comparator, [field], to_compare)
+  def new(comparator, field, compare_to) when is_binary(field) do
+    new(comparator, [field], compare_to)
   end
 
-  def new(comparator, field, to_compare) when is_list(field) do
+  def new(comparator, field, compare_to) when is_list(field) do
     %__MODULE__{
       comparator: comparator,
       field: field,
-      compare_to: to_compare
+      compare_to: compare_to
     }
   end
 
@@ -80,5 +81,15 @@ defmodule King.Rules.Condition do
 
   def find_field(input, _fields) do
     input
+  end
+
+  def parse(<<head, rest::binary>> = condition) do
+    case head do
+      ?| ->
+        Text.parse(rest)
+
+      _ ->
+        NL.parse(condition)
+    end
   end
 end
