@@ -35,7 +35,7 @@ defmodule King.Engine do
   defp eval_rules(%__MODULE__{type: :cascade, rules: rules}, input) do
     rules_evaluations = Enum.map(rules, &Rule.eval(&1, input))
 
-    case Enum.all?(rules_evaluations, &elem(&1, 0)) do
+    case Enum.all?(rules_evaluations, &(&1.valid?)) do
       true ->
         rules_evaluations
 
@@ -47,8 +47,8 @@ defmodule King.Engine do
   defp eval_rules(%__MODULE__{type: :first_one, rules: rules}, input) do
     valid_rule =
       Enum.find(rules, fn rule ->
-        {eval, _} = Rule.eval(rule, input)
-        eval
+         %Rule{valid?: valid?} = Rule.eval(rule, input)
+         valid?
       end)
 
     case valid_rule do
