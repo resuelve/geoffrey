@@ -7,18 +7,29 @@ defmodule KingTest do
   alias King.Rules.Condition
 
   test "Condition parsing" do
-    assert %Condition{comparator: "gt", compare_to: 18, field: ["age"]} ==
-             King.Rules.Condition.parse("gt|age|i#18")
+    assert [{:ok, %Condition{comparator: "gt", compare_to: 18, field: ["age"]}}] ==
+             Condition.parse("|gt|age|i#18")
 
-    assert %Condition{comparator: "lt", field: ["personal_information", "age"], compare_to: 30} ==
-             King.Rules.Condition.parse("lt|personal_information>age|i#30")
+    assert [
+             {:ok,
+              %Condition{comparator: "lt", field: ["personal_information", "age"], compare_to: 30}}
+           ] ==
+             Condition.parse("|lt|personal_information>age|i#30")
 
-    assert %Condition{
-             comparator: "neq",
-             field: ["nested", "2_nested", "3_nested"],
-             compare_to: 14.59
-           } ==
-             King.Rules.Condition.parse("neq|nested>2_nested>3_nested|f#14.59")
+    assert [
+             {:ok,
+              %Condition{
+                comparator: "neq",
+                field: ["nested", "2_nested", "3_nested"],
+                compare_to: 14.59
+              }}
+           ] ==
+             Condition.parse("|neq|nested>2_nested>3_nested|f#14.59")
+  end
+
+  test "Condition NL parsing" do
+    assert [{:ok, %Condition{comparator: "gt", compare_to: "18", field: ["age"]}}] ==
+             Condition.parse("gt age, 18")
   end
 
   test "Rule generation" do
@@ -28,10 +39,10 @@ defmodule KingTest do
       "regla_prueba"
       |> Rule.new("Una prueba")
       |> Rule.set_priority(1)
-      |> Rule.add_condition("gt|age|i#30")
+      |> Rule.add_condition("|gt|age|i#30")
       |> Rule.add_condition(condition)
       |> Rule.add_action(:example)
-      |> Rule.add_action(fn -> 2 * 250 end)
+      |> Rule.add_action(fn _ -> 2 * 250 end)
 
     assert rule.name == "regla_prueba"
     assert rule.desc == "Una prueba"
@@ -60,13 +71,14 @@ defmodule KingTest do
       "regla_prueba"
       |> Rule.new("Una prueba")
       |> Rule.set_priority(1)
-      |> Rule.add_condition("gt|age|i#30")
+      |> Rule.add_condition("|gt|age|i#30")
       |> Rule.add_condition(condition)
-      |> Rule.add_action(:example)
-      |> Rule.add_action(fn -> 2 * 250 end)
+      |> Rule.add_action(fn x -> Map.put(x, "type", :example) end)
+      |> Rule.add_action(fn x -> Map.put(x, "valid?", true) end)
 
-    assert {true, [500, :example]} = King.Rule.eval(rule, input)
-    assert {false, _} = King.Rule.eval(rule, invalid_input)
+    %Rule{result: result} = King.Rule.eval(rule, input)
+    assert %{"type" => :example, "valid?" => true} = result
+    assert %Rule{valid?: false} = King.Rule.eval(rule, invalid_input)
 
     input = %{
       "debts" => [
@@ -87,10 +99,10 @@ defmodule KingTest do
       "regla_1"
       |> Rule.new("Regla #1")
       |> Rule.set_priority(100)
-      |> Rule.add_condition("any|debts>entity|bbva")
-      |> Rule.add_action(:bbva)
+      |> Rule.add_condition("|any|debts>entity|bbva")
+      |> Rule.add_action(fn _ -> :bbva end)
 
-    assert {true, [:bbva]} = Rule.eval(rule1, input)
+    assert %Rule{result: :bbva} = Rule.eval(rule1, input)
   end
 
   test "Test IN comparator" do
@@ -132,7 +144,6 @@ defmodule KingTest do
     assert "yay" == Condition.find_field(input, fields3)
   end
 
-  @tag :engine
   test "Test cascade engine eval" do
     input = %{
       "debts" => [
@@ -154,15 +165,15 @@ defmodule KingTest do
       "bbva"
       |> Rule.new("Para clientes con deudas en bbva")
       |> Rule.set_priority(100)
-      |> Rule.add_condition("any|debts>entity|bbva")
+      |> Rule.add_condition("|any|debts>entity|bbva")
       |> Rule.add_condition("in", ["country"], ["mx", "es"])
-      |> Rule.add_action(:bbva)
+      |> Rule.add_action(fn set -> Map.put(set, "product_id", 1) end)
 
     rule2 =
       "debt_over_240k"
       |> Rule.new("Total de deuda mayor a 240mil pesos MX")
       |> Rule.add_condition("eq", ["country"], "mx")
-      |> Rule.add_action(:over_240)
+      |> Rule.add_action(fn _ -> :over_240 end)
 
     Engine.new()
     |> Engine.add_rule(rule1)
@@ -170,7 +181,7 @@ defmodule KingTest do
     |> Engine.eval(input)
   end
 
-  @tag :engine
+  @tag :wip
   test "Test first one engine eval" do
     input = %{
       "debts" => [
@@ -192,16 +203,16 @@ defmodule KingTest do
       "bbva"
       |> Rule.new("Para clientes con deudas en bbva")
       |> Rule.set_priority(100)
-      |> Rule.add_condition("any|debts>entity|bbva")
+      |> Rule.add_condition("|any|debts>entity|bbva")
       |> Rule.add_condition("in", ["country"], ["mx", "es"])
-      |> Rule.add_action(:bbva)
+      |> Rule.add_action(fn _ -> :bbva end)
 
     rule2 =
       "debt_over_240k"
       |> Rule.new("Total de deuda mayor a 240mil pesos MX")
-      |> Rule.add_condition("gt|debt_amount|#i240000|or")
+      |> Rule.add_condition("|gt|debt_amount|i#240000")
       |> Rule.add_condition("eq", ["country"], "mx")
-      |> Rule.add_action(:over_240)
+      |> Rule.add_action(fn _ -> :over_240 end)
 
     Engine.new(:first_one)
     |> Engine.add_rule(rule1)
