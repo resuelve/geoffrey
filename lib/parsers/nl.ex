@@ -1,6 +1,8 @@
 defmodule King.Parsers.NL do
   import NimbleParsec
 
+  alias King.Rules.Condition
+
   comparator =
     choice([
       string("eq"),
@@ -12,7 +14,6 @@ defmodule King.Parsers.NL do
       string("in"),
       string("any")
     ])
-    |> map({String, :to_atom, []})
 
   whitespace =
     "\s"
@@ -20,8 +21,11 @@ defmodule King.Parsers.NL do
     |> repeat()
 
   field_path = utf8_string([?a..?z, ?., ?_], min: 1)
-  compare_to = utf8_string([not: ?\n], min: 1)
-  |> ignore(whitespace)
+
+  compare_to =
+    [not: ?\n]
+    |> utf8_string(min: 1)
+    |> ignore(whitespace)
 
   eol = string("\n")
 
@@ -36,6 +40,17 @@ defmodule King.Parsers.NL do
 
   defparsec(:condition, condition)
 
-  defparsec :rule, condition |> wrap() |> repeat()
+  defparsec(:rule, condition |> wrap() |> repeat())
 
+  def parse(conditions) do
+    case rule(conditions) do
+      {:ok, [_ | _] = conditions, _, _, _, _} ->
+        Enum.map(conditions, fn [comparator, field_path, compare_to] ->
+          {:ok, Condition.new(comparator, field_path, compare_to)}
+        end)
+
+      _ ->
+        {:error, conditions}
+    end
+  end
 end
