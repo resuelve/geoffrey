@@ -20,8 +20,6 @@ defmodule King.Rule do
           actions: []
         }
 
-  @arity_error "A Rule action must be a function of arity 1"
-
   def new(name, desc, priority \\ 0) do
     %__MODULE__{
       name: name,
@@ -35,8 +33,13 @@ defmodule King.Rule do
   end
 
   def add_condition(rule, condition) when is_binary(condition) do
-    parsed_condition = Condition.parse(condition)
-    add_condition(rule, parsed_condition)
+    parsed_conditions = Condition.parse(condition)
+
+    parsed_conditions
+    |> Enum.reject(fn {status, _condition} -> status == :error end)
+    |> Enum.reduce(rule, fn {_, condition}, updated_rule ->
+      add_condition(updated_rule, condition)
+    end)
   end
 
   def add_condition(rule, %Condition{} = condition) do
