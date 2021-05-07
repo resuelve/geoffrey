@@ -4,9 +4,14 @@ defmodule King.Parsers.Text do
   defguard is_empty(value) when value == "" or is_nil(value)
 
   def parse(condition) do
-    [comparator, field, compare_to] = String.split(condition, "|", parts: 3)
+    condition
+    |> String.split("\n")
+    |> Enum.map(&parse_condition/1)
+  end
 
-    field_path = String.split(field, ">")
+  defp parse_condition(condition) do
+    [comparator, field, compare_to] = String.split(condition, "|", parts: 3)
+    field_path = String.split(field, ".")
 
     compare_to =
       compare_to
@@ -15,7 +20,7 @@ defmodule King.Parsers.Text do
 
     case validate_parse(comparator, field_path, compare_to) do
       true ->
-        [{:ok, Condition.new(comparator, field_path, compare_to)}]
+        {:ok, Condition.new(comparator, field_path, compare_to)}
 
       _ ->
         {:error, condition}
