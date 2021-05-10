@@ -2,10 +2,10 @@ defmodule King.Engine do
   alias King.Rule
 
   defstruct rules: [],
-            type: :cascade,
+            type: :all,
             result: nil
 
-  @valid_types ~w(cascade first_one)a
+  @valid_types ~w(all any)a
 
   def new do
     %__MODULE__{}
@@ -32,7 +32,7 @@ defmodule King.Engine do
     %{engine | rules: ordered_rules}
   end
 
-  defp eval_rules(%__MODULE__{type: :cascade, rules: rules}, input) do
+  defp eval_rules(%__MODULE__{type: :all, rules: rules}, input) do
     rules_evaluations = Enum.map(rules, &Rule.eval(&1, input))
 
     case Enum.all?(rules_evaluations, & &1.valid?) do
@@ -44,7 +44,7 @@ defmodule King.Engine do
     end
   end
 
-  defp eval_rules(%__MODULE__{type: :first_one, rules: rules}, input) do
+  defp eval_rules(%__MODULE__{type: :any, rules: rules}, input) do
     valid_rule =
       Enum.find(rules, fn rule ->
         %Rule{valid?: valid?} = Rule.eval(rule, input)
