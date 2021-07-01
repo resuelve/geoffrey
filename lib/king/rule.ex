@@ -42,6 +42,12 @@ defmodule King.Rule do
     end)
   end
 
+  def add_condition(rule, [_ | _] = conditions) do
+    Enum.reduce(conditions, rule, fn condition, updated_rule ->
+      add_condition(updated_rule, condition)
+    end)
+  end
+
   def add_condition(rule, %Condition{} = condition) do
     new_conditions = [condition | rule.conditions]
 
