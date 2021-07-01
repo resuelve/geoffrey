@@ -23,7 +23,7 @@ defmodule NLTest do
     assert {:ok, ["gte", "debt_amount", "120000"], _, _, _, _} = NL.condition(c1)
     assert {:ok, ["any", "debts.type", "bancaria"], _, _, _, _} = NL.condition(c2)
 
-    assert {:ok, [["gte", "debt_amount", "120000"], ["any", "debts.type", "bancaria"]], _rest, _, _,
-            _} = NL.rule(rule)
+    assert {:ok, [["gte", "debt_amount", "120000"], ["any", "debts.type", "bancaria"]], _rest, _,
+            _, _} = NL.rule(rule)
   end
 end

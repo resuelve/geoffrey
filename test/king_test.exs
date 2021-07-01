@@ -2,11 +2,10 @@ defmodule KingTest do
   use ExUnit.Case
   doctest King
 
-  alias King.Engine
   alias King.Rule
   alias King.Rules.Condition
 
-  test "Condition parsing" do
+  test "Condition txt parsing" do
     assert [{:ok, %Condition{comparator: "gt", compare_to: 18, field: ["age"]}}] ==
              Condition.parse("|gt|age|i#18")
 
@@ -14,7 +13,7 @@ defmodule KingTest do
              {:ok,
               %Condition{comparator: "lt", field: ["personal_information", "age"], compare_to: 30}}
            ] ==
-             Condition.parse("|lt|personal_information>age|i#30")
+             Condition.parse("|lt|personal_information.age|i#30")
 
     assert [
              {:ok,
@@ -24,7 +23,7 @@ defmodule KingTest do
                 compare_to: 14.59
               }}
            ] ==
-             Condition.parse("|neq|nested>2_nested>3_nested|f#14.59")
+             Condition.parse("|neq|nested.2_nested.3_nested|f#14.59")
   end
 
   test "Condition NL parsing" do
@@ -99,7 +98,7 @@ defmodule KingTest do
       "regla_1"
       |> Rule.new("Regla #1")
       |> Rule.set_priority(100)
-      |> Rule.add_condition("|any|debts>entity|bbva")
+      |> Rule.add_condition("|any|debts.entity|bbva")
       |> Rule.add_action(fn _ -> :bbva end)
 
     assert %Rule{result: :bbva} = Rule.eval(rule1, input)
@@ -142,81 +141,5 @@ defmodule KingTest do
 
     fields3 = ["f8"]
     assert "yay" == Condition.find_field(input, fields3)
-  end
-
-  test "Test cascade engine eval" do
-    input = %{
-      "debts" => [
-        %{
-          "amount" => 175_000,
-          "entity" => "bbva"
-        },
-        %{
-          "amount" => 70_000,
-          "entity" => "liverpool"
-        }
-      ],
-      "debt_amount" => 245_000,
-      "months_without_paying" => 10,
-      "country" => "mx"
-    }
-
-    rule1 =
-      "bbva"
-      |> Rule.new("Para clientes con deudas en bbva")
-      |> Rule.set_priority(100)
-      |> Rule.add_condition("|any|debts>entity|bbva")
-      |> Rule.add_condition("in", ["country"], ["mx", "es"])
-      |> Rule.add_action(fn set -> Map.put(set, "product_id", 1) end)
-
-    rule2 =
-      "debt_over_240k"
-      |> Rule.new("Total de deuda mayor a 240mil pesos MX")
-      |> Rule.add_condition("eq", ["country"], "mx")
-      |> Rule.add_action(fn _ -> :over_240 end)
-
-    Engine.new()
-    |> Engine.add_rule(rule1)
-    |> Engine.add_rule(rule2)
-    |> Engine.eval(input)
-  end
-
-  @tag :wip
-  test "Test first one engine eval" do
-    input = %{
-      "debts" => [
-        %{
-          "amount" => 175_000,
-          "entity" => "citibanamex"
-        },
-        %{
-          "amount" => 70_000,
-          "entity" => "liverpool"
-        }
-      ],
-      "debt_amount" => 245_000,
-      "months_without_paying" => 10,
-      "country" => "mx"
-    }
-
-    rule1 =
-      "bbva"
-      |> Rule.new("Para clientes con deudas en bbva")
-      |> Rule.set_priority(100)
-      |> Rule.add_condition("|any|debts>entity|bbva")
-      |> Rule.add_condition("in", ["country"], ["mx", "es"])
-      |> Rule.add_action(fn _ -> :bbva end)
-
-    rule2 =
-      "debt_over_240k"
-      |> Rule.new("Total de deuda mayor a 240mil pesos MX")
-      |> Rule.add_condition("|gt|debt_amount|i#240000")
-      |> Rule.add_condition("eq", ["country"], "mx")
-      |> Rule.add_action(fn _ -> :over_240 end)
-
-    Engine.new(:first_one)
-    |> Engine.add_rule(rule1)
-    |> Engine.add_rule(rule2)
-    |> Engine.eval(input)
   end
 end
