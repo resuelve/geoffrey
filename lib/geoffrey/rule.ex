@@ -1,5 +1,5 @@
-defmodule King.Rule do
-  alias King.Rules.Condition
+defmodule Geoffrey.Rule do
+  alias Geoffrey.Rules.Condition
 
   defstruct [
     :name,

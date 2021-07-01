@@ -1,5 +1,5 @@
-defmodule King.Parsers.Text do
-  alias King.Rules.Condition
+defmodule Geoffrey.Parsers.Text do
+  alias Geoffrey.Rules.Condition
 
   defguard is_empty(value) when value == "" or is_nil(value)
 

@@ -1,9 +1,9 @@
-defmodule KingTest do
+defmodule GeoffreyTest do
   use ExUnit.Case
-  doctest King
+  doctest Geoffrey
 
-  alias King.Rule
-  alias King.Rules.Condition
+  alias Geoffrey.Rule
+  alias Geoffrey.Rules.Condition
 
   test "Condition txt parsing" do
     assert [{:ok, %Condition{comparator: "gt", compare_to: 18, field: ["age"]}}] ==
@@ -75,9 +75,9 @@ defmodule KingTest do
       |> Rule.add_action(fn x -> Map.put(x, "type", :example) end)
       |> Rule.add_action(fn x -> Map.put(x, "valid?", true) end)
 
-    %Rule{result: result} = King.Rule.eval(rule, input)
+    %Rule{result: result} = Geoffrey.Rule.eval(rule, input)
     assert %{"type" => :example, "valid?" => true} = result
-    assert %Rule{valid?: false} = King.Rule.eval(rule, invalid_input)
+    assert %Rule{valid?: false} = Geoffrey.Rule.eval(rule, invalid_input)
 
     input = %{
       "debts" => [

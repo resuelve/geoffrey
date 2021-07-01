@@ -1,5 +1,5 @@
-defmodule King.Engine do
-  alias King.Rule
+defmodule Geoffrey.Engine do
+  alias Geoffrey.Rule
 
   defstruct rules: [],
             type: :all,
@@ -32,19 +32,20 @@ defmodule King.Engine do
     %{engine | rules: ordered_rules}
   end
 
-  defp eval_rules(%__MODULE__{type: :all, rules: rules}, input) do
+  defp eval_rules(%__MODULE__{type: :all, rules: rules} = engine, input) do
     rules_evaluations = Enum.map(rules, &Rule.eval(&1, input))
 
     case Enum.all?(rules_evaluations, & &1.valid?) do
       true ->
-        rules_evaluations
+        %{result: result} = List.last(rules_evaluations)
+        %{engine | result: result}
 
       _ ->
         false
     end
   end
 
-  defp eval_rules(%__MODULE__{type: :any, rules: rules}, input) do
+  defp eval_rules(%__MODULE__{type: :any, rules: rules} = engine, input) do
     valid_rule =
       Enum.find(rules, fn rule ->
         %Rule{valid?: valid?} = Rule.eval(rule, input)
@@ -55,8 +56,8 @@ defmodule King.Engine do
       nil ->
         false
 
-      rule ->
-        rule.actions
+      %{result: result} = _rule ->
+        %{engine | result: result}
     end
   end
 

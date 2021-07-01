@@ -1,7 +1,7 @@
 defmodule NLTest do
   use ExUnit.Case
 
-  alias King.Parsers.NL
+  alias Geoffrey.Parsers.NL
 
   test "Should return error if condition is badly typed" do
     assert {:error, _} = NL.parse("WHAT OMG BBQ")

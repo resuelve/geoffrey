@@ -1,6 +1,6 @@
-defmodule King.Rules.Condition do
-  alias King.Rules.Condition.Comparators
-  alias King.Parsers.{NL, Text}
+defmodule Geoffrey.Rules.Condition do
+  alias Geoffrey.Rules.Condition.Comparators
+  alias Geoffrey.Parsers.{NL, Text}
 
   defstruct [
     :comparator,

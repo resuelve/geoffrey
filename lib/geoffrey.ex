@@ -1,6 +1,6 @@
-defmodule King do
+defmodule Geoffrey do
   @moduledoc """
-  Documentation for `King`.
+  Documentation for `Geoffrey`.
   """
 
   @doc """
@@ -8,7 +8,7 @@ defmodule King do
 
   ## Examples
 
-      iex> King.hello()
+      iex> Geoffrey.hello()
       :world
 
   """

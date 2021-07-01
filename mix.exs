@@ -1,9 +1,9 @@
-defmodule King.MixProject do
+defmodule Geoffrey.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :king,
+      app: :geoffrey,
       version: "0.1.0",
       elixir: "~> 1.11",
       start_permanent: Mix.env() == :prod,

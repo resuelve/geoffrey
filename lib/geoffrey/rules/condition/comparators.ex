@@ -1,4 +1,4 @@
-defmodule King.Rules.Condition.Comparators do
+defmodule Geoffrey.Rules.Condition.Comparators do
   def get("eq") do
     &Kernel.==/2
   end

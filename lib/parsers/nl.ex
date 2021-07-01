@@ -1,7 +1,7 @@
-defmodule King.Parsers.NL do
+defmodule Geoffrey.Parsers.NL do
   import NimbleParsec
 
-  alias King.Rules.Condition
+  alias Geoffrey.Rules.Condition
 
   comparator =
     choice([
