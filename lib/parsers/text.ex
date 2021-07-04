@@ -60,7 +60,7 @@ defmodule Geoffrey.Parsers.Text do
       |> String.split("#")
       |> parse_compare_to()
 
-    case validate_parse(comparator, field_path, compare_to) do
+    case valid_condition?(comparator, field_path, compare_to) do
       true ->
         {:ok, Condition.new(comparator, field_path, compare_to)}
 
@@ -81,7 +81,7 @@ defmodule Geoffrey.Parsers.Text do
   end
 
   # Parsea el valor que se va a comprar en la condicion
-  @spec parse_compare_to([String.t(), String.t()]) :: any()
+  @spec parse_compare_to([String.t()]) :: any()
   defp parse_compare_to(["i", value]) do
     case Integer.parse(value) do
       {parsed_value, _} ->

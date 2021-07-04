@@ -140,7 +140,7 @@ defmodule Geoffrey.Rule do
   end
 
   # Actualiza el result de una regla
-  @spec update_result(__MODULE__.t(), new_result) :: __MODULE__.t()
+  @spec update_result(__MODULE__.t(), any()) :: __MODULE__.t()
   defp update_result(%__MODULE__{} = rule, new_result) do
     %{rule | result: new_result}
   end
