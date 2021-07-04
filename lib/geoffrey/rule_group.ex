@@ -68,12 +68,10 @@ defmodule Geoffrey.RuleGroup do
     %{engine | rules: ordered_rules}
   end
 
-  @doc """
-  Evalua las reglas del grupo.
-  Si el grupo es de tipo `all` todas las reglas deben de evaluar correctamente para
-  que el grupo sea valido.
-  Si el grupo es de tipo `any` con que alguna regla evalue el grupo sera valido
-  """
+  # Evalua las reglas del grupo.
+  # Si el grupo es de tipo `all` todas las reglas deben de evaluar correctamente para
+  # que el grupo sea valido.
+  # Si el grupo es de tipo `any` con que alguna regla evalue el grupo sera valido
   @spec eval_rules(__MODULE__.t(), map()) :: __MODULE__.t()
   defp eval_rules(%__MODULE__{type: :all, rules: rules} = rule_group, input) do
     rules_evaluations = Enum.map(rules, &Rule.eval(&1, input))
