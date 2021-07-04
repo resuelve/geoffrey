@@ -1,8 +1,8 @@
 defmodule TxtTest do
   use ExUnit.Case
 
-  alias King.Parsers.Text
-  alias King.Rules.Condition
+  alias Geoffrey.Parsers.Text
+  alias Geoffrey.Rules.Condition
 
   test "Parsing a condition" do
     condition = Condition.new("eq", ["entity"], "bbva")
