@@ -1,4 +1,12 @@
 defmodule Geoffrey.Parsers.NL do
+  @moduledoc """
+  Parser de lenguaje natural para crear condiciones para reglas
+
+  Este parser funciona hasta el momento pero se encuentra en trabajo
+  y se agregara la documentacion una vez que se revise
+
+  """
+
   import NimbleParsec
 
   alias Geoffrey.Rules.Condition
@@ -42,6 +50,7 @@ defmodule Geoffrey.Parsers.NL do
 
   defparsec(:rule, condition |> wrap() |> repeat())
 
+  @spec parse(String.t()) :: {:ok, Condition.t()} | {:error, String.t()}
   def parse(conditions) do
     case rule(conditions) do
       {:ok, [_ | _] = conditions, _, _, _, _} ->

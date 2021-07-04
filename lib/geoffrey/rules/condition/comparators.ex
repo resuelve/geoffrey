@@ -1,4 +1,16 @@
 defmodule Geoffrey.Rules.Condition.Comparators do
+  @moduledoc """
+  Manejo de las funciones comparadoras.
+  Hasta el momento solo soporta funciones de comparacion binarias o
+  que acepten dos parametros y retornen un valor booleano
+
+  """
+
+  @doc """
+  Obtiene una funcion de arity 2 a partir del codigo
+  del comparador dado
+  """
+  @spec get(String.t()) :: function()
   def get("eq") do
     &Kernel.==/2
   end
