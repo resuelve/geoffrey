@@ -10,7 +10,7 @@ defmodule Geoffrey.RuleGroup do
     rules: [Rule.t()],
     valid?: boolean(),
     type: atom(),
-    results: [any()]
+    result: [any()]
   }
 
   @valid_types ~w(all any)a
@@ -24,9 +24,17 @@ defmodule Geoffrey.RuleGroup do
   end
 
   @doc """
+  Actualiza el tipo de grupo de reglas
+  """
+  @spec set_type(__MODULE__.t(), atom()) :: __MODULE__.t()
+  def set_type(%__MODULE__{} = rule_group, type) when type in @valid_types do
+    %{rule_group | type: type}
+  end
+
+  @doc """
   Define las reglas que se usaran en este grupo
   """
-  @spec set_rules(__MODULE__.t(), [Rule.t()])
+  @spec set_rules(__MODULE__.t(), [Rule.t()]) :: __MODULE__.t()
   def set_rules(%__MODULE__{} = engine, rules) do
     %{engine | rules: rules}
   end
@@ -44,7 +52,7 @@ defmodule Geoffrey.RuleGroup do
   @doc """
   Ordena las reglas por prioridad y las evalua
   """
-  @spec eval(__MODULE__.t(), map()) :: 
+  @spec eval(__MODULE__.t(), map()) :: __MODULE__.t()
   def eval(%__MODULE__{} = engine, input) do
     engine
     |> order_rules_by_priority()
@@ -67,20 +75,20 @@ defmodule Geoffrey.RuleGroup do
   Si el grupo es de tipo `any` con que alguna regla evalue el grupo sera valido
   """
   @spec eval_rules(__MODULE__.t(), map()) :: __MODULE__.t()
-  defp eval_rules(%__MODULE__{type: :all, rules: rules} = engine, input) do
+  defp eval_rules(%__MODULE__{type: :all, rules: rules} = rule_group, input) do
     rules_evaluations = Enum.map(rules, &Rule.eval(&1, input))
 
     case Enum.all?(rules_evaluations, & &1.valid?) do
       true ->
         %{result: result} = List.last(rules_evaluations)
-        %{engine | valid?: true, result: result}
+        %{rule_group | valid?: true, result: result}
 
       _ ->
         rule_group
     end
   end
 
-  defp eval_rules(%__MODULE__{type: :any, rules: rules} = engine, input) do
+  defp eval_rules(%__MODULE__{type: :any, rules: rules} = rule_group, input) do
     valid_rule =
       Enum.find(rules, fn rule ->
         %Rule{valid?: valid?} = Rule.eval(rule, input)
@@ -92,7 +100,7 @@ defmodule Geoffrey.RuleGroup do
         false
 
       %{result: result} = _rule ->
-        %{engine | result: result}
+        %{rule_group | result: result}
     end
   end
 

@@ -1,8 +1,8 @@
-defmodule EngineTest do
+defmodule RuleGroupTest do
   use ExUnit.Case
 
-  alias King.Engine
-  alias King.Rule
+  alias Geoffrey.RuleGroup
+  alias Geoffrey.Rule
 
   test "Test `all` engine eval" do
     input = %{
@@ -35,10 +35,10 @@ defmodule EngineTest do
       |> Rule.add_condition("eq", ["country"], "mx")
       |> Rule.add_action(fn _ -> :over_240 end)
 
-    Engine.new()
-    |> Engine.add_rule(rule1)
-    |> Engine.add_rule(rule2)
-    |> Engine.eval(input)
+    RuleGroup.new()
+    |> RuleGroup.add_rule(rule1)
+    |> RuleGroup.add_rule(rule2)
+    |> RuleGroup.eval(input)
   end
 
   test "Test `any` engine eval" do
@@ -73,10 +73,10 @@ defmodule EngineTest do
       |> Rule.add_condition("eq", ["country"], "mx")
       |> Rule.add_action(fn _ -> :over_240 end)
 
-    Engine.new(:any)
-    |> Engine.add_rule(rule1)
-    |> Engine.add_rule(rule2)
-    |> Engine.eval(input)
+    RuleGroup.new()
+    |> RuleGroup.add_rule(rule1)
+    |> RuleGroup.add_rule(rule2)
+    |> RuleGroup.eval(input)
   end
 
   test "Test `all` engine with result modification" do
@@ -113,9 +113,9 @@ defmodule EngineTest do
       |> Rule.add_condition("gte", ["debt_amount"], 250_000)
       |> Rule.add_action(fn result -> Map.put(result, "product_id", 99) end)
 
-    Engine.new()
-    |> Engine.add_rule(rule1)
-    |> Engine.add_rule(rule2)
-    |> Engine.eval(input)
+    RuleGroup.new()
+    |> RuleGroup.add_rule(rule1)
+    |> RuleGroup.add_rule(rule2)
+    |> RuleGroup.eval(input)
   end
 end
