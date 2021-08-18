@@ -47,6 +47,8 @@ defmodule Geoffrey.Parsers.Text do
     condition
     |> String.split("\n")
     |> Enum.map(&parse_condition/1)
+    |> Enum.filter(&elem(&1, 0))
+    |> Enum.map(&elem(&1, 1))
   end
 
   # Crea una condicion a partir de una cadena de caracteres
