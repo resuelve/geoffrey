@@ -99,9 +99,11 @@ defmodule GeoffreyTest do
       |> Rule.new("Regla #1")
       |> Rule.set_priority(100)
       |> Rule.add_condition("|any|debts.entity|bbva")
-      |> Rule.add_action(fn _ -> :bbva end)
+      |> Rule.add_action(fn input ->
+        Map.put(input, :has_bbva_debt?, true)
+      end)
 
-    assert %Rule{result: :bbva} = Rule.eval(rule1, input)
+    assert %Rule{result: %{has_bbva_debt?: true}} = Rule.eval(rule1, input)
   end
 
   test "Test IN comparator" do
