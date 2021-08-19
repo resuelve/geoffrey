@@ -7,10 +7,7 @@ defmodule Geoffrey.MixProject do
       version: "0.2.0",
       elixir: "~> 1.11",
       start_permanent: Mix.env() == :prod,
-      deps: deps(),
-      xref: [
-        exclude: [Ecto.Type]
-      ]
+      deps: deps()
     ]
   end
 
@@ -24,7 +21,8 @@ defmodule Geoffrey.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:nimble_parsec, "~> 1.1"}
+      {:nimble_parsec, "~> 1.1"},
+      {:ecto, "~> 3.0", optional: true}
     ]
   end
 end
