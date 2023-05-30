@@ -57,9 +57,13 @@ defmodule Geoffrey.Parsers.Text do
     field_path = String.split(field, ".")
 
     compare_to =
-      compare_to
-      |> String.split("#")
-      |> parse_compare_to()
+      case String.split(compare_to, ",") do
+        [value] ->
+          parse_compare_to_value(value)
+
+        [_ | _] = value_list ->
+          Enum.map(value_list, &parse_compare_to_value/1)
+      end
 
     case valid_condition?(comparator, field_path, compare_to) do
       true ->
@@ -68,6 +72,13 @@ defmodule Geoffrey.Parsers.Text do
       _ ->
         {:error, condition}
     end
+  end
+
+  @spec parse_compare_to_value(String.t()) :: integer() | float() | String.t()
+  defp parse_compare_to_value(value) do
+    value
+    |> String.split("#")
+    |> parse_compare_to()
   end
 
   # Valida que la condicion se haya parseado correctamente
