@@ -17,4 +17,16 @@ defmodule TxtTest do
     assert [{:ok, c1}, {:ok, c2}] ==
              Text.parse("eq|entity|bbva\nneq|personal_information.country|mx")
   end
+
+  test "Parsing IN condition" do
+    c1 = Condition.new("any", ["dir", "value"], [1, 2, 3])
+
+    assert [{:ok, c1}] == Text.parse("any|dir.value|i#1,i#2,i#3")
+  end
+
+  test "Parsing ANY condition" do
+    c1 = Condition.new("any", ["dir", "value"], 1)
+
+    assert [{:ok, c1}] == Text.parse("any|dir.value|i#1")
+  end
 end

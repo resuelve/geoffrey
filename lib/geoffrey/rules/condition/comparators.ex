@@ -37,8 +37,8 @@ defmodule Geoffrey.Rules.Condition.Comparators do
 
   def get("in") do
     fn
-      value, compare_to when is_list(value) ->
-        compare_to in value
+      value, compare_to when is_list(compare_to) ->
+        value in compare_to
 
       _, _ ->
         false

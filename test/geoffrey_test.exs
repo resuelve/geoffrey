@@ -106,14 +106,21 @@ defmodule GeoffreyTest do
     assert %Rule{result: %{has_bbva_debt?: true}} = Rule.eval(rule1, input)
   end
 
-  test "Test IN comparator" do
-    condition = Condition.new("in", ["value"], 1)
+  test "Test ANY comparator" do
+    condition = Condition.new("any", ["value"], 1)
 
     assert true ==
              Condition.eval(condition, [
                %{"value" => 1, "desc" => "uno"},
                %{"value" => 2, "desc" => "dos"}
              ])
+  end
+
+  test "Test IN comparator" do
+    condition = Condition.new("in", ["value"], [1, 2, 3])
+
+    assert Condition.eval(condition, %{"value" => 1, "desc" => "uno"})
+    assert Condition.eval(condition, %{"value" => 2, "desc" => "dos"})
   end
 
   test "Should find field correctly for condition" do
