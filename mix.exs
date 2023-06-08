@@ -7,6 +7,7 @@ defmodule Geoffrey.MixProject do
       version: "0.2.1",
       elixir: "~> 1.11",
       start_permanent: Mix.env() == :prod,
+      aliases: aliases(),
       deps: deps()
     ]
   end
@@ -23,6 +24,12 @@ defmodule Geoffrey.MixProject do
     [
       {:nimble_parsec, "~> 1.1"},
       {:ecto, "~> 3.0", optional: true}
+    ]
+  end
+
+  def aliases do
+    [
+      ci: ["format --check-formatted", "test --cover"]
     ]
   end
 end
