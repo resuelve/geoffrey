@@ -6,28 +6,26 @@ defmodule GeoffreyTest do
   alias Geoffrey.Rules.Condition
 
   test "Condition txt parsing" do
-    assert [{:ok, %Condition{comparator: "gt", compare_to: 18, field: ["age"]}}] ==
+    assert [%Condition{comparator: "gt", compare_to: 18, field: ["age"]}] ==
              Condition.parse("|gt|age|i#18")
 
     assert [
-             {:ok,
-              %Condition{comparator: "lt", field: ["personal_information", "age"], compare_to: 30}}
+             %Condition{comparator: "lt", field: ["personal_information", "age"], compare_to: 30}
            ] ==
              Condition.parse("|lt|personal_information.age|i#30")
 
     assert [
-             {:ok,
-              %Condition{
-                comparator: "neq",
-                field: ["nested", "2_nested", "3_nested"],
-                compare_to: 14.59
-              }}
+             %Condition{
+               comparator: "neq",
+               field: ["nested", "2_nested", "3_nested"],
+               compare_to: 14.59
+             }
            ] ==
              Condition.parse("|neq|nested.2_nested.3_nested|f#14.59")
   end
 
   test "Condition NL parsing" do
-    assert [{:ok, %Condition{comparator: "gt", compare_to: "18", field: ["age"]}}] ==
+    assert [%Condition{comparator: "gt", compare_to: "18", field: ["age"]}] ==
              Condition.parse("gt age, 18")
   end
 
