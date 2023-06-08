@@ -2,16 +2,16 @@ defmodule Geoffrey.RuleGroup do
   alias Geoffrey.Rule
 
   defstruct rules: [],
-    valid?: false,
+            valid?: false,
             type: :all,
             result: nil
 
   @type t :: %__MODULE__{
-    rules: [Rule.t()],
-    valid?: boolean(),
-    type: atom(),
-    result: [any()]
-  }
+          rules: [Rule.t()],
+          valid?: boolean(),
+          type: atom(),
+          result: [any()]
+        }
 
   @valid_types ~w(all any)a
 

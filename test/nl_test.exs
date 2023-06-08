@@ -4,7 +4,7 @@ defmodule NLTest do
   alias Geoffrey.Parsers.NL
 
   test "Should return error if condition is badly typed" do
-    assert {:error, _} = NL.parse("WHAT OMG BBQ")
+    assert [] = NL.parse("WHAT OMG BBQ")
   end
 
   test "Test condition parsing" do

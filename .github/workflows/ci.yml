@@ -1,0 +1,58 @@
+name: CI
+
+env:
+  ImageOS: ubuntu20
+
+on:
+  pull_request:
+    branches: [master]
+
+jobs:
+  changes:
+    name: Detect what files changed
+    runs-on: ubuntu-latest
+    outputs:
+      elixir: ${{ steps.changes.outputs.elixir }}
+      markdown: ${{ steps.changes.outputs.markdown }}
+    steps:
+      - uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            elixir:
+              - 'src/**'
+              - mix.exs
+              - mix.lock
+            markdown:
+              - 'docs/**'
+              - README.md
+
+  markdown-lint:
+    needs: changes
+    if: ${{ needs.changes.outputs.markdown == 'true' }}
+    name: Documentation lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Check markdown files
+        uses: resuelve/markdown-lint-action@v1
+
+  build-and-test:
+    needs: changes
+    if: ${{ needs.changes.outputs.elixir == 'true' }}
+    name: Build and test elixir
+    runs-on: ubuntu-latest
+    container: elixir:1.11-alpine
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install build dependencies
+        run: |
+          apk add --update bash openssl git
+          mix local.hex --force && mix local.rebar --force
+      - name: Install elixir dependencies
+        run: mix deps.get
+      - name: Run CI Tests
+        env:
+          MIX_ENV: test
+        run: mix ci
