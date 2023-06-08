@@ -50,13 +50,12 @@ defmodule Geoffrey.Rule do
   @doc """
   Agrega una condicion a la regla
   """
-  @spec add_condition(__MODULE__.t(), String.t() | Condition.t() | [String.t()] | [Condition.t()]) :: __MODULE__.t()
+  @spec add_condition(__MODULE__.t(), String.t() | Condition.t() | [String.t()] | [Condition.t()]) ::
+          __MODULE__.t()
   def add_condition(rule, condition) when is_binary(condition) do
-    parsed_conditions = Condition.parse(condition)
-
-    parsed_conditions
-    |> Enum.reject(fn {status, _condition} -> status == :error end)
-    |> Enum.reduce(rule, fn {_, condition}, updated_rule ->
+    condition
+    |> Condition.parse()
+    |> Enum.reduce(rule, fn condition, updated_rule ->
       add_condition(updated_rule, condition)
     end)
   end

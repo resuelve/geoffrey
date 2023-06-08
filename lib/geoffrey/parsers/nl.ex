@@ -9,7 +9,10 @@ defmodule Geoffrey.Parsers.NL do
 
   import NimbleParsec
 
+  alias Geoffrey.Parsers.ParserBehaviour
   alias Geoffrey.Rules.Condition
+
+  @behaviour ParserBehaviour
 
   comparator =
     choice([
@@ -50,16 +53,16 @@ defmodule Geoffrey.Parsers.NL do
 
   defparsec(:rule, condition |> wrap() |> repeat())
 
-  @spec parse(String.t()) :: {:ok, Condition.t()} | {:error, String.t()}
+  @impl true
   def parse(conditions) do
     case rule(conditions) do
       {:ok, [_ | _] = conditions, _, _, _, _} ->
         Enum.map(conditions, fn [comparator, field_path, compare_to] ->
-          {:ok, Condition.new(comparator, field_path, compare_to)}
+          Condition.new(comparator, field_path, compare_to)
         end)
 
       _ ->
-        {:error, conditions}
+        []
     end
   end
 end

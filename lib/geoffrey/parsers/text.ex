@@ -35,19 +35,20 @@ defmodule Geoffrey.Parsers.Text do
 
   """
 
+  alias Geoffrey.Parsers.ParserBehaviour
   alias Geoffrey.Rules.Condition
+
+  @behaviour ParserBehaviour
 
   defguard is_empty(value) when value == "" or is_nil(value)
 
-  @doc """
-  Convierte una cadena de caracteres en una o varias condiciones
-  """
-  @spec parse(String.t()) :: [Condition.t()]
-  def parse(condition) do
-    condition
+  @impl true
+  def parse(raw_condition) do
+    raw_condition
     |> String.split("\n")
     |> Enum.map(&parse_condition/1)
-    |> Enum.filter(&elem(&1, 0))
+    |> Enum.filter(&(elem(&1, 0) == :ok))
+    |> Enum.map(&elem(&1, 1))
   end
 
   # Crea una condicion a partir de una cadena de caracteres
