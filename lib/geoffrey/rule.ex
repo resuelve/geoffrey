@@ -133,8 +133,12 @@ defmodule Geoffrey.Rule do
 
   # Evalua las condiciones de una regla
   @spec eval_conditions(__MODULE__.t(), map()) :: boolean()
-  defp eval_conditions(%__MODULE__{conditions: conditions}, input) do
+  defp eval_conditions(%__MODULE__{validation_type: :all, conditions: conditions}, input) do
     Enum.all?(conditions, &Condition.eval(&1, input))
+  end
+
+  defp eval_conditions(%__MODULE__{validation_type: :any, conditions: conditions}, input) do
+    Enum.any?(conditions, &Condition.eval(&1, input))
   end
 
   # Ejecuta las acciones asignadas si la regla es valida
