@@ -1,13 +1,13 @@
 defmodule Geoffrey.Rule do
   alias Geoffrey.Rules.Condition
 
-  @typep validation_type :: :all | :any
+  @typep eval_mode :: :all | :any
 
   @enforce_keys [:name]
   defstruct [
     :name,
     :desc,
-    {:validation_type, :all},
+    {:eval_mode, :all},
     {:priority, 0},
     {:conditions, []},
     {:actions, []},
@@ -19,7 +19,7 @@ defmodule Geoffrey.Rule do
   @type t :: %__MODULE__{
           name: String.t(),
           desc: String.t(),
-          validation_type: validation_type(),
+          eval_mode: eval_mode(),
           priority: integer(),
           conditions: [],
           actions: []
@@ -54,9 +54,9 @@ defmodule Geoffrey.Rule do
   @doc """
   Actualiza la prioridad de una regla. El valor debe ser un numero entero
   """
-  @spec set_validation_type(__MODULE__.t(), validation_type()) :: __MODULE__.t()
-  def set_validation_type(rule, validation_type) when is_integer(validation_type) do
-    %{rule | validation_type: validation_type}
+  @spec set_eval_mode(__MODULE__.t(), eval_mode()) :: __MODULE__.t()
+  def set_eval_mode(rule, eval_mode) when is_integer(eval_mode) do
+    %{rule | eval_mode: eval_mode}
   end
 
   @doc """
@@ -133,11 +133,11 @@ defmodule Geoffrey.Rule do
 
   # Evalua las condiciones de una regla
   @spec eval_conditions(__MODULE__.t(), map()) :: boolean()
-  defp eval_conditions(%__MODULE__{validation_type: :all, conditions: conditions}, input) do
+  defp eval_conditions(%__MODULE__{eval_mode: :all, conditions: conditions}, input) do
     Enum.all?(conditions, &Condition.eval(&1, input))
   end
 
-  defp eval_conditions(%__MODULE__{validation_type: :any, conditions: conditions}, input) do
+  defp eval_conditions(%__MODULE__{eval_mode: :any, conditions: conditions}, input) do
     Enum.any?(conditions, &Condition.eval(&1, input))
   end
 
