@@ -55,7 +55,7 @@ defmodule Geoffrey.Rule do
   Actualiza la prioridad de una regla. El valor debe ser un numero entero
   """
   @spec set_eval_mode(__MODULE__.t(), eval_mode()) :: __MODULE__.t()
-  def set_eval_mode(rule, eval_mode) when is_integer(eval_mode) do
+  def set_eval_mode(rule, eval_mode) when eval_mode in [:all, :any] do
     %{rule | eval_mode: eval_mode}
   end
 
