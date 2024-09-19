@@ -1,10 +1,13 @@
 defmodule Geoffrey.Rule do
   alias Geoffrey.Rules.Condition
 
+  @typep validation_type :: :all | :any
+
   @enforce_keys [:name]
   defstruct [
     :name,
     :desc,
+    {:validation_type, :all},
     {:priority, 0},
     {:conditions, []},
     {:actions, []},
@@ -16,6 +19,7 @@ defmodule Geoffrey.Rule do
   @type t :: %__MODULE__{
           name: String.t(),
           desc: String.t(),
+          validation_type: validation_type(),
           priority: integer(),
           conditions: [],
           actions: []
@@ -45,6 +49,14 @@ defmodule Geoffrey.Rule do
   @spec set_priority(__MODULE__.t(), integer()) :: __MODULE__.t()
   def set_priority(rule, priority) when is_integer(priority) do
     %{rule | priority: priority}
+  end
+
+  @doc """
+  Actualiza la prioridad de una regla. El valor debe ser un numero entero
+  """
+  @spec set_validation_type(__MODULE__.t(), validation_type()) :: __MODULE__.t()
+  def set_validation_type(rule, validation_type) when is_integer(validation_type) do
+    %{rule | validation_type: validation_type}
   end
 
   @doc """
