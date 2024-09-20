@@ -1,8 +1,6 @@
 defmodule Geoffrey.Rule do
   alias Geoffrey.Rules.Condition
 
-  @type eval_mode :: :all | :any
-
   @enforce_keys [:name]
   defstruct [
     :name,
@@ -16,6 +14,7 @@ defmodule Geoffrey.Rule do
     {:errors, []}
   ]
 
+  @type eval_mode :: :all | :any
   @type t :: %__MODULE__{
           name: String.t(),
           desc: String.t(),
