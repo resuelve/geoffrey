@@ -4,7 +4,7 @@ defmodule Geoffrey.MixProject do
   def project do
     [
       app: :geoffrey,
-      version: "0.2.3",
+      version: "0.3.0",
       elixir: "~> 1.11",
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
