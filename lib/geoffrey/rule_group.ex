@@ -24,7 +24,7 @@ defmodule Geoffrey.RuleGroup do
   @doc """
   Actualiza el tipo de grupo de reglas
   """
-  @spec set_eval_mode(__MODULE__.t(), atom()) :: __MODULE__.t()
+  @spec set_eval_mode(__MODULE__.t(), Rule.eval_mode()) :: __MODULE__.t()
   def set_eval_mode(%__MODULE__{} = rule_group, eval_mode) when eval_mode in [:all, :any] do
     %{rule_group | eval_mode: eval_mode}
   end

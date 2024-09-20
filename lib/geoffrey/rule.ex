@@ -1,7 +1,7 @@
 defmodule Geoffrey.Rule do
   alias Geoffrey.Rules.Condition
 
-  @typep eval_mode :: :all | :any
+  @type eval_mode :: :all | :any
 
   @enforce_keys [:name]
   defstruct [
