@@ -36,6 +36,7 @@ defmodule GeoffreyTest do
       "regla_prueba"
       |> Rule.new("Una prueba")
       |> Rule.set_priority(1)
+      |> Rule.set_eval_mode(:any)
       |> Rule.add_condition("|gt|age|i#30")
       |> Rule.add_condition(condition)
       |> Rule.add_action(:example)
@@ -52,14 +53,19 @@ defmodule GeoffreyTest do
   end
 
   test "Rule eval" do
-    invalid_input = %{
+    input = %{
+      "age" => 35,
+      "height" => 1.85
+    }
+
+    input_2 = %{
       "age" => 30,
       "height" => 1.85
     }
 
-    input = %{
-      "age" => 35,
-      "height" => 1.85
+    invalid_input = %{
+      "age" => 30,
+      "height" => 1.84
     }
 
     condition = Condition.new("eq", ["height"], 1.85)
@@ -68,6 +74,7 @@ defmodule GeoffreyTest do
       "regla_prueba"
       |> Rule.new("Una prueba")
       |> Rule.set_priority(1)
+      |> Rule.set_eval_mode(:any)
       |> Rule.add_condition("|gt|age|i#30")
       |> Rule.add_condition(condition)
       |> Rule.add_action(fn x -> Map.put(x, "type", :example) end)
@@ -75,6 +82,9 @@ defmodule GeoffreyTest do
 
     %Rule{result: result} = Geoffrey.Rule.eval(rule, input)
     assert %{"type" => :example, "valid?" => true} = result
+
+    assert %Rule{valid?: true} = Geoffrey.Rule.eval(rule, input_2)
+
     assert %Rule{valid?: false} = Geoffrey.Rule.eval(rule, invalid_input)
 
     input = %{

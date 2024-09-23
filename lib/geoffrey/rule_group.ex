@@ -3,32 +3,30 @@ defmodule Geoffrey.RuleGroup do
 
   defstruct rules: [],
             valid?: false,
-            type: :all,
+            eval_mode: :all,
             result: nil
 
   @type t :: %__MODULE__{
           rules: [Rule.t()],
           valid?: boolean(),
-          type: atom(),
+          eval_mode: atom(),
           result: [any()]
         }
-
-  @valid_types ~w(all any)a
 
   @doc """
   Crea un nuevo grupo de reglas
   """
   @spec new :: __MODULE__.t()
   def new do
-    %__MODULE__{type: :any}
+    %__MODULE__{eval_mode: :any}
   end
 
   @doc """
   Actualiza el tipo de grupo de reglas
   """
-  @spec set_type(__MODULE__.t(), atom()) :: __MODULE__.t()
-  def set_type(%__MODULE__{} = rule_group, type) when type in @valid_types do
-    %{rule_group | type: type}
+  @spec set_eval_mode(__MODULE__.t(), Rule.eval_mode()) :: __MODULE__.t()
+  def set_eval_mode(%__MODULE__{} = rule_group, eval_mode) when eval_mode in [:all, :any] do
+    %{rule_group | eval_mode: eval_mode}
   end
 
   @doc """
@@ -73,7 +71,7 @@ defmodule Geoffrey.RuleGroup do
   # que el grupo sea valido.
   # Si el grupo es de tipo `any` con que alguna regla evalue el grupo sera valido
   @spec eval_rules(__MODULE__.t(), map()) :: __MODULE__.t()
-  defp eval_rules(%__MODULE__{type: :all, rules: rules} = rule_group, input) do
+  defp eval_rules(%__MODULE__{eval_mode: :all, rules: rules} = rule_group, input) do
     rules_evaluations = Enum.map(rules, &Rule.eval(&1, input))
 
     case Enum.all?(rules_evaluations, & &1.valid?) do
@@ -82,11 +80,11 @@ defmodule Geoffrey.RuleGroup do
         %{rule_group | valid?: true, result: result}
 
       _ ->
-        rule_group
+        %{rule_group | valid?: false, result: nil}
     end
   end
 
-  defp eval_rules(%__MODULE__{type: :any, rules: rules} = rule_group, input) do
+  defp eval_rules(%__MODULE__{eval_mode: :any, rules: rules} = rule_group, input) do
     valid_rule =
       Enum.find(rules, fn rule ->
         %Rule{valid?: valid?} = Rule.eval(rule, input)
@@ -95,10 +93,10 @@ defmodule Geoffrey.RuleGroup do
 
     case valid_rule do
       nil ->
-        false
+        %{rule_group | valid?: false, result: nil}
 
-      %{result: result} = _rule ->
-        %{rule_group | result: result}
+      %Rule{result: result} ->
+        %{rule_group | valid?: true, result: result}
     end
   end
 
