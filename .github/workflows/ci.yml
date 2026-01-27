@@ -1,8 +1,5 @@
 name: CI
 
-env:
-  ImageOS: ubuntu20
-
 on:
   pull_request:
     branches: [master]
